@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>(function(){
+  // Fest&Chill n'a plus qu'un seul thème (clair, chaud) — on force ça
+  // sans dépendre d'un ancien réglage 'fc-theme' resté dans le navigateur.
+  document.documentElement.setAttribute('data-theme','light');
+  localStorage.setItem('fc-theme','light');
+  var light=true;
+  var fcLang = localStorage.getItem('fc-lang')||'fr';
+  document.documentElement.lang = fcLang;
+  document.documentElement.dir = (fcLang === 'ar') ? 'rtl' : 'ltr';
+  var hex = localStorage.getItem('fc-accent');
+  if(hex){
+    function hexToRgb(h){h=h.replace('#','');if(h.length===3)h=h.split('').map(function(c){return c+c}).join('');var n=parseInt(h,16);return{r:(n>>16)&255,g:(n>>8)&255,b:n&255}}
+    function mix(a,b,amt){return{r:Math.round(a.r+(b.r-a.r)*amt),g:Math.round(a.g+(b.g-a.g)*amt),b:Math.round(a.b+(b.b-a.b)*amt)}}
+    function toHex(c){return '#'+[c.r,c.g,c.b].map(function(v){return Math.max(0,Math.min(255,v)).toString(16).padStart(2,'0')}).join('').toUpperCase()}
+    var rgb=hexToRgb(hex);
+    var violet=mix(rgb,{r:0,g:0,b:0},0.28);
+    var glow=light?mix(rgb,{r:0,g:0,b:0},0.18):mix(rgb,{r:255,g:255,b:255},0.32);
+    var s=document.documentElement.style;
+    s.setProperty('--purple',hex);s.setProperty('--violet',toHex(violet));s.setProperty('--glow',toHex(glow));
+    s.setProperty('--accent-rgb',rgb.r+','+rgb.g+','+rgb.b);
+  }
+})();
+function toggleMobileSidebar(){
+  document.querySelector('.sidebar').classList.toggle('open');
+  document.querySelector('.sidebar-overlay').classList.toggle('show');
+}
+</script>
+<title>Parrainage — Fest&amp;Chill</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#071619;--deep:#0D2126;--surface:#123037;
+  --purple:#0EA5A0;--violet:#0B7A76;--glow:#5EEAD4;
+  --gold:#FF8A3D;--green:#34D399;--red:#FF5A5F;
+  --white:#F7FBFA;--muted:#7C9A9A;--text:#DCEEEC;
+  --sand:#FFD9A8;--card:rgba(14,165,160,.08);--border:rgba(94,234,212,.14);
+  --topbar-bg:rgba(13,10,30,.9);--accent-rgb:14,165,160;
+  --fd:'Instrument Serif',serif;--fb:'Plus Jakarta Sans',sans-serif;--fm:'IBM Plex Mono',monospace;
+  --r:12px;--sidebar:240px;
+  /* Couleurs fixes pour le bandeau illustré (fc-hero) : ce bandeau a un fond
+     sombre codé en dur qui ne change PAS avec le thème clair/sombre. Le texte
+     posé dessus doit donc rester clair, quel que soit le thème actif. */
+  --hero-text:#2B1706;--hero-pill-bg:rgba(255,251,243,.72);--hero-pill-border:rgba(43,23,6,.16);
+}
+:root[data-theme="light"]{
+  --ink:#FFFBF3;--deep:#FFFFFF;--surface:#FFFFFF;
+  --purple:#C4321F;--violet:#E8432E;--glow:#1E8A5F;
+  --gold:#E8A012;--green:#1E8A5F;--red:#C4321F;
+  --white:#FFFFFF;--muted:#8A7A68;--text:#241C14;
+  --sand:#FFE3BE;--card:rgba(232,67,46,.05);--border:#EBDFC9;
+  --topbar-bg:rgba(255,251,243,.85);--accent-rgb:196,50,31;
+}
+body{font-family:var(--fb);background:var(--ink);color:var(--text);display:flex;min-height:100vh}
+.sidebar{width:var(--sidebar);background:var(--deep);border-right:1px solid var(--border);position:fixed;top:0;left:0;height:100vh;height:100dvh;overflow-y:auto;-webkit-overflow-scrolling:touch;display:flex;flex-direction:column;z-index:50}
+/* Arabe (RTL) : la sidebar passe à droite, le contenu se décale en miroir. */
+html[dir="rtl"] .sidebar{left:auto;right:0;border-right:none;border-left:1px solid var(--border)}
+html[dir="rtl"] .main{margin-left:0;margin-right:var(--sidebar)}
+html[dir="rtl"] body{direction:rtl}
+.sidebar-logo{padding:22px 20px;border-bottom:1px solid var(--border)}
+.sidebar-logo a{font-family:var(--fd);font-weight:800;font-size:1.25rem;color:var(--text);text-decoration:none}
+.sidebar-logo span{color:var(--glow)}
+.sidebar-nav{padding:16px 12px;flex:1}
+.nav-label{font-size:.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;padding:10px 8px 4px}
+.s-link{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;color:var(--muted);text-decoration:none;font-size:.875rem;font-weight:500;margin-bottom:2px;transition:all .15s}
+.s-link:hover{background:var(--card);color:var(--text)}
+.s-link.active{background:rgba(var(--accent-rgb),.2);color:var(--glow);border:1px solid rgba(var(--accent-rgb),.2)}
+.s-link .ic{width:18px;text-align:center}
+.sidebar-footer{padding:14px 12px;border-top:1px solid var(--border)}
+.avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--glow));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem;color:var(--white);flex-shrink:0}
+.user-pill{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px}
+.user-name{font-size:.82rem;font-weight:600;color:var(--text)}
+.user-role{font-size:.72rem;color:var(--muted)}
+.main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column}
+.sidebar-toggle-btn{display:none;background:transparent;border:1.5px solid var(--border);border-radius:8px;width:38px;height:38px;align-items:center;justify-content:center;cursor:pointer;color:var(--text);margin-right:10px;flex-shrink:0}
+.topbar{padding:14px 28px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--topbar-bg);backdrop-filter:blur(12px);position:sticky;top:0;z-index:40}
+.topbar-title{font-family:var(--fd);font-weight:700;font-size:1.05rem}
+.page{padding:28px}
+
+/* WALLET HERO */
+@keyframes walletShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+.wallet-hero{background:linear-gradient(120deg,#FFE9C7,#FFD9A0,#FFC177,#FFE9C7);background-size:300% 300%;animation:walletShift 12s ease infinite;border:1.5px solid var(--border);border-radius:16px;padding:32px;margin-bottom:24px;position:relative;overflow:hidden;display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px;align-items:center;box-shadow:0 14px 30px rgba(196,50,31,.1)}
+.wallet-hero::before{content:'';position:absolute;top:-60px;left:-60px;width:240px;height:240px;border-radius:50%;background:radial-gradient(circle,rgba(14,165,160,.3),transparent 70%);pointer-events:none}
+.wallet-hero::after{content:'';position:absolute;bottom:-40px;right:-40px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(255,138,61,.18),transparent 70%);pointer-events:none}
+.wh-block{position:relative;z-index:1}
+.wh-label{font-size:.72rem;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px}
+.wh-amount{font-family:var(--fm);font-size:2.1rem;font-weight:700;line-height:1;margin-bottom:4px;transition:transform .3s}
+.wallet-hero:hover .wh-amount{transform:scale(1.02)}
+.wh-sub{font-size:.8rem;color:rgba(255,255,255,.5)}
+.wh-divider{width:1px;height:80px;background:rgba(255,255,255,.1);position:relative;z-index:1}
+.wh-actions{display:flex;flex-direction:column;gap:10px;position:relative;z-index:1}
+
+/* RETRAIT MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(10px);z-index:200;display:none;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--deep);border:1px solid var(--border);border-radius:16px;padding:32px;width:420px;max-width:90vw}
+.modal-title{font-family:var(--fd);font-weight:800;font-size:1.2rem;margin-bottom:6px}
+.modal-sub{color:var(--muted);font-size:.85rem;margin-bottom:22px}
+.form-label{display:block;font-size:.75rem;font-weight:700;color:var(--muted);margin-bottom:7px;text-transform:uppercase;letter-spacing:.7px}
+.form-input{width:100%;padding:12px 16px;border-radius:8px;background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--text);font-family:var(--fb);font-size:.93rem;outline:none;transition:border-color .2s;margin-bottom:14px}
+.form-input:focus{border-color:var(--purple);background:rgba(var(--accent-rgb),.07)}
+.modal-actions{display:flex;gap:10px;margin-top:4px}
+.op-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.op-btn{padding:12px;border-radius:8px;border:1.5px solid var(--border);background:transparent;color:var(--text);cursor:pointer;font-family:var(--fb);font-weight:700;font-size:.9rem;transition:all .2s;text-align:center}
+.op-btn.sel,.op-btn:hover{border-color:var(--purple);background:rgba(var(--accent-rgb),.15);color:var(--text)}
+.amount-input-wrap{position:relative;margin-bottom:14px}
+.amount-input-wrap .currency{position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:.85rem;pointer-events:none}
+
+/* STATS ROW */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px}
+.stat-lbl{font-size:.72rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.7px;margin-bottom:8px}
+.stat-num{font-family:var(--fm);font-size:1.4rem;font-weight:700;margin-bottom:4px}
+.stat-sub{font-size:.75rem;color:var(--muted)}
+
+/* TWO COL */
+.two-col{display:grid;grid-template-columns:1fr 340px;gap:20px}
+
+/* SECTION CARD */
+.section-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:16px}
+.section-head{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.section-head-title{font-family:var(--fd);font-weight:700;font-size:.9rem}
+
+/* TRANSACTIONS */
+.tx-item{display:flex;align-items:center;gap:14px;padding:14px 20px;border-top:1px solid var(--border);transition:background .15s}
+.tx-item:hover{background:rgba(255,255,255,.02)}
+.tx-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+.tx-icon.green{background:rgba(16,185,129,.12);color:var(--green)}
+.tx-icon.red{background:rgba(239,68,68,.12);color:var(--red)}
+.tx-icon.gold{background:rgba(245,158,11,.12);color:var(--gold)}
+.tx-info{flex:1;min-width:0}
+.tx-title{font-size:.86rem;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tx-sub{font-size:.75rem;color:var(--muted);margin-top:1px}
+.tx-amount{font-family:var(--fd);font-weight:700;font-size:.95rem;white-space:nowrap}
+.tx-amount.in{color:var(--green)}
+.tx-amount.out{color:var(--red)}
+.tx-amount.neutral{color:var(--gold)}
+
+/* CHART MINI */
+.chart-wrap{padding:20px;height:140px;display:flex;align-items:flex-end;gap:6px}
+.bar-w{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px}
+.bar-b{width:100%;border-radius:4px 4px 0 0;min-height:3px;cursor:pointer;transition:all .3s}
+.bar-b:hover{filter:brightness(1.3)}
+.bar-lbl{font-size:.63rem;color:var(--muted)}
+
+/* WITHDRAWAL HISTORY */
+.wd-item{display:flex;align-items:center;gap:12px;padding:12px 20px;border-top:1px solid var(--border)}
+.wd-icon{font-size:1.2rem}
+.wd-info{flex:1}
+.wd-title{font-size:.84rem;font-weight:600;color:var(--text)}
+.wd-sub{font-size:.73rem;color:var(--muted);margin-top:1px}
+.wd-amount{font-family:var(--fd);font-weight:700;color:var(--red);font-size:.9rem}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:100px;font-size:.7rem;font-weight:700}
+.b-green{background:rgba(16,185,129,.12);color:var(--green);border:1px solid rgba(16,185,129,.25)}
+.b-gold{background:rgba(245,158,11,.12);color:var(--gold);border:1px solid rgba(245,158,11,.25)}
+.b-red{background:rgba(239,68,68,.12);color:var(--red);border:1px solid rgba(239,68,68,.25)}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:10px 20px;border-radius:8px;font-size:.88rem;font-weight:600;cursor:pointer;font-family:var(--fb);border:none;transition:all .18s;text-decoration:none}
+.btn-primary{background:var(--purple);color:var(--white)}
+.btn-primary:hover{background:var(--violet);transform:translateY(-1px)}
+.btn-ghost{background:transparent;color:var(--text);border:1px solid var(--border)}
+.btn-ghost:hover{border-color:var(--glow);color:var(--text)}
+.btn-lg{padding:13px 24px;font-size:.95rem}
+.btn-sm{padding:6px 12px;font-size:.78rem;border-radius:6px}
+
+.toast{position:fixed;bottom:24px;right:24px;background:var(--surface);border:1px solid rgba(16,185,129,.4);border-radius:10px;padding:14px 20px;display:flex;align-items:center;gap:10px;font-size:.88rem;font-weight:500;z-index:999;transform:translateY(60px);opacity:0;transition:all .3s;box-shadow:0 20px 40px rgba(0,0,0,.4)}
+.toast.show{transform:none;opacity:1}
+
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%);transition:transform .25s ease}
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-left:0}
+  .sidebar-toggle-btn{display:flex!important}
+  .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:49}
+  .sidebar-overlay.show{display:block}
+  .stats-row{grid-template-columns:repeat(2,1fr)}
+  .two-col{grid-template-columns:1fr}
+  .wallet-hero{grid-template-columns:1fr}
+}
+
+
+/* ============================================================
+   FEST&CHILL — v3 DESIGN SYSTEM
+   Palette: deep teal night + golden-hour amber + coral energy.
+   No purple. Illustrated sunset-festival motif as signature.
+   ============================================================ */
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes shimmerMove{0%{background-position:-160% 0}100%{background-position:160% 0}}
+@keyframes livedot{0%,100%{box-shadow:0 0 0 0 rgba(255,90,95,.5)}70%{box-shadow:0 0 0 8px rgba(255,90,95,0)}}
+@keyframes sunDrift{0%,100%{transform:translate(0,0)}50%{transform:translate(-1.2%,-1%)}}
+@keyframes twinkle{0%,100%{opacity:.55}50%{opacity:1}}
+@keyframes grainshift{0%,100%{transform:translate(0,0)}50%{transform:translate(-2%,-1%)}}
+@keyframes popIn{0%{opacity:0;transform:scale(.9)}100%{opacity:1;transform:scale(1)}}
+
+html{scroll-behavior:smooth}
+body{position:relative}
+body::before{content:'';position:fixed;inset:-10%;z-index:0;pointer-events:none;opacity:.5;
+  background-image:radial-gradient(circle at 16% 10%,rgba(14,165,160,.14),transparent 42%),
+                    radial-gradient(circle at 90% 85%,rgba(255,138,61,.08),transparent 42%);
+}
+body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.03;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation:grainshift 9s steps(2) infinite;
+}
+
+/* entrance choreography */
+.page>*,#app>*{opacity:1;animation:fadeUp .6s cubic-bezier(.16,1,.3,1) both}
+.page>*:nth-child(1),#app>*:nth-child(1){animation-delay:.02s}
+.page>*:nth-child(2),#app>*:nth-child(2){animation-delay:.08s}
+.page>*:nth-child(3),#app>*:nth-child(3){animation-delay:.14s}
+.page>*:nth-child(4),#app>*:nth-child(4){animation-delay:.2s}
+.page>*:nth-child(5),#app>*:nth-child(5){animation-delay:.26s}
+.page>*:nth-child(6),#app>*:nth-child(6){animation-delay:.32s}
+.stats-row .stat-card:nth-child(1){animation-delay:.05s}
+.stats-row .stat-card:nth-child(2){animation-delay:.11s}
+.stats-row .stat-card:nth-child(3){animation-delay:.17s}
+.stats-row .stat-card:nth-child(4){animation-delay:.23s}
+
+/* card lift */
+.stat-card,.section-card,.share-card,.qr-card,.prog-card,.info-section,.ticket-detail-card{
+  transition:transform .35s cubic-bezier(.16,1,.3,1),box-shadow .35s,border-color .35s;
+}
+.stat-card:hover{transform:translateY(-5px);box-shadow:0 18px 36px rgba(14,165,160,.16);border-color:rgba(94,234,212,.4)}
+.section-card:hover,.share-card:hover,.info-section:hover{border-color:rgba(94,234,212,.25)}
+
+/* buttons */
+.btn{position:relative;overflow:hidden;letter-spacing:.01em}
+.btn-primary{background:linear-gradient(135deg,var(--purple),var(--violet))}
+.btn-primary::before{content:'';position:absolute;top:0;left:-120%;width:55%;height:100%;background:linear-gradient(120deg,transparent,rgba(255,255,255,.35),transparent);transform:skewX(-20deg);transition:left .55s}
+.btn-primary:hover:not(:disabled)::before{left:130%}
+.btn-primary:hover:not(:disabled){box-shadow:0 12px 26px rgba(14,165,160,.35);transform:translateY(-2px)}
+.btn-primary:active:not(:disabled){transform:translateY(0) scale(.98)}
+.btn-ghost:hover{transform:translateY(-1px)}
+
+/* progress */
+.prog-fill,.pc-fill{position:relative;overflow:hidden;background-size:250% 100%}
+.prog-fill::after,.pc-fill::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent);animation:shimmerMove 2.6s linear infinite}
+
+/* status pill — clean, professional (no tilt/stamp gimmick) */
+.pill-status{
+  font-family:var(--fm);text-transform:uppercase;letter-spacing:.08em;font-weight:600;font-size:.72rem;
+  border:1.5px solid currentColor;border-radius:100px;padding:5px 13px 5px 10px;
+  display:inline-flex;align-items:center;gap:7px;
+}
+.pill-status .livedot{width:6px;height:6px;border-radius:50%;background:currentColor;animation:livedot 1.8s infinite}
+
+input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(14,165,160,.2)}
+.avatar{transition:transform .3s}
+.sidebar-footer:hover .avatar{transform:scale(1.06)}
+.s-link{transition:all .2s cubic-bezier(.34,1.56,.64,1)}
+.s-link:hover{transform:translateX(3px)}
+tr{transition:background .2s}
+
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-track{background:var(--ink)}
+::-webkit-scrollbar-thumb{background:var(--card);border-radius:10px}
+::-webkit-scrollbar-thumb:hover{background:var(--purple)}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ===== illustrated hero (shared across pages) ===== */
+.fc-hero{position:relative;overflow:hidden;border-radius:18px;min-height:300px;display:flex;flex-direction:column;justify-content:flex-end;box-shadow:0 24px 55px rgba(0,0,0,.35)}
+.illus-hero{position:absolute;inset:0;width:100%;height:100%;z-index:0}
+.illus-sun{animation:sunDrift 10s ease-in-out infinite}
+.illus-lights circle{animation:twinkle 2.6s ease-in-out infinite}
+.illus-lights circle:nth-child(odd){animation-delay:-1.3s}
+.fc-hero-content{position:relative;z-index:1;padding:34px 5% 28px;display:flex;flex-direction:column;gap:14px}
+.fc-hero-topbar{position:relative;z-index:1;display:flex;justify-content:space-between;align-items:flex-start;padding:20px 5% 0}
+.fc-chip{opacity:1;background:var(--hero-pill-bg);backdrop-filter:blur(10px);border:1px solid var(--hero-pill-border);border-radius:100px;padding:7px 16px;font-size:.8rem;font-weight:700;display:flex;align-items:center;gap:8px;animation:popIn .5s .1s cubic-bezier(.2,1.4,.4,1) both;color:var(--hero-text)}
+.fc-hero-title{font-family:var(--fd);font-weight:800;font-size:clamp(1.7rem,4vw,2.7rem);line-height:1.06;letter-spacing:-.01em;color:var(--hero-text)}
+.fc-hero-meta{display:flex;flex-wrap:wrap;gap:10px}
+.fc-meta-pill{background:var(--hero-pill-bg);backdrop-filter:blur(8px);border:1px solid var(--hero-pill-border);border-radius:100px;padding:6px 14px;font-size:.82rem;display:flex;align-items:center;gap:7px;color:var(--hero-text)}
+
+
+/* ===== icon system ===== */
+.icn{width:1.15em;height:1.15em;display:inline-block;vertical-align:-0.22em;flex-shrink:0}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block;vertical-align:middle;flex-shrink:0}
+.s-link .ic{display:inline-flex;align-items:center;justify-content:center;width:18px;flex-shrink:0}
+.s-link .ic .icn{width:18px;height:18px;vertical-align:0}
+.btn .icn,.badge .icn,.pill-status .icn,.stamp .icn{vertical-align:-0.18em}
+.topbar-title .icn,.section-head-title .icn,.info-title .icn{width:1.05em;height:1.05em;vertical-align:-0.15em;margin-right:2px}
+.result-icon .icn{width:1em;height:1em}
+
+
+.illus{width:100%;height:auto;display:block}
+
+
+@media(max-width:640px){
+  html{-webkit-text-size-adjust:100%;overflow-x:hidden}
+  body{overflow-x:hidden;max-width:100vw}
+  *{max-width:100%}
+  body{font-size:1rem}
+  .main{padding:14px!important}
+  .topbar{padding:12px 14px!important}
+  .page,.page-inner{padding:0!important}
+  .stats-row,.three-col,.two-col,.card-grid{grid-template-columns:1fr!important}
+  .form-input,.form-select,.form-textarea,select,input,textarea{font-size:16px!important;padding:12px!important}
+  .btn{padding:12px 18px!important;font-size:.92rem!important;min-height:44px}
+  .btn-sm{min-height:38px;padding:9px 14px!important}
+  table{display:block;overflow-x:auto;white-space:nowrap}
+  .section-card,.stat-card{padding:16px!important}
+  h1,.page-title{font-size:1.4rem!important}
+  .topbar-title{font-size:1rem!important}
+  .section-head{flex-wrap:wrap;gap:8px!important}
+  .section-head > div{flex-wrap:wrap;width:100%}
+  select,input[type="text"]{width:100%!important;min-width:0!important}
+  .op-grid{grid-template-columns:1fr!important}
+}
+</style>
+</head>
+<body>
+
+<div class="sidebar-overlay" onclick="toggleMobileSidebar()"></div>
+<aside class="sidebar">
+  <div class="sidebar-logo"><a href="festchill-landing.html">Fest<span>&</span>Chill</a></div>
+  <nav class="sidebar-nav">
+    <div class="nav-label" data-i18n="nav.group_main">Principal</div>
+    <a href="festchill-dashboard.html" class="s-link"><span class="ic"><svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9.5a1 1 0 0 0 1 1h4v-6h2v6h4a1 1 0 0 0 1-1V10"/></svg></span> <span data-i18n="nav.dashboard">Dashboard</span></a>
+    <a href="festchill-create-event.html" class="s-link"><span class="ic"><svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span> <span data-i18n="nav.create_event">Créer un événement</span></a>
+    <a href="festchill-events.html" class="s-link"><span class="ic"><svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="16" rx="2.2"/><line x1="3.5" y1="10" x2="20.5" y2="10"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/></svg></span> <span data-i18n="nav.my_events">Mes événements</span></a>
+    <a href="festchill-tickets.html" class="s-link"><span class="ic"><svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2.5a2 2 0 0 0 0 4V16a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2.5a2 2 0 0 0 0-4Z"/><line x1="10" y1="6" x2="10" y2="18" stroke-dasharray="2 2.4"/></svg></span> <span data-i18n="nav.tickets_sold">Tickets vendus</span></a>
+    <div class="nav-label" data-i18n="nav.group_finance">Finances</div>
+    <a href="festchill-wallet.html" class="s-link"><span class="ic"><svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7.5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/><path d="M17 11.5h2.5a1.5 1.5 0 0 1 1.5 1.5v1a1.5 1.5 0 0 1-1.5 1.5H17a2 2 0 0 1 0-4Z"/><line x1="3" y1="8.7" x2="21" y2="8.7"/></svg></span> <span data-i18n="nav.wallet">Portefeuille</span></a>
+    <a href="festchill-transactions.html" class="s-link"><span class="ic"><svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="20" x2="5" y2="11"/><line x1="12" y1="20" x2="12" y2="5"/><line x1="19" y1="20" x2="19" y2="14"/></svg></span> <span data-i18n="nav.transactions">Transactions</span></a>
+    <div class="nav-label" data-i18n="nav.group_tools">Outils</div>
+    <a href="festchill-scanner.html" class="s-link"><span class="ic"><svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8.2A1.7 1.7 0 0 1 5.7 6.5h2.1l1-1.7h6.4l1 1.7h2.1A1.7 1.7 0 0 1 20 8.2v9.1a1.7 1.7 0 0 1-1.7 1.7H5.7A1.7 1.7 0 0 1 4 17.3Z"/><circle cx="12" cy="12.4" r="3.4"/></svg></span> <span data-i18n="nav.scanner">Scanner QR</span></a>
+    <a href="festchill-referral.html" class="s-link active"><span class="ic">🤝</span> <span>Parrainage</span></a>
+    <a href="festchill-settings.html" class="s-link"><span class="ic"><svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 13.5a1.7 1.7 0 0 0 .34 1.87l.06.06a2.06 2.06 0 1 1-2.92 2.92l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1.03 1.56v.17a2.06 2.06 0 1 1-4.12 0v-.09a1.7 1.7 0 0 0-1.11-1.56 1.7 1.7 0 0 0-1.87.34l-.06.06a2.06 2.06 0 1 1-2.92-2.92l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.56-1.03h-.17a2.06 2.06 0 1 1 0-4.12h.09a1.7 1.7 0 0 0 1.56-1.11 1.7 1.7 0 0 0-.34-1.87l-.06-.06a2.06 2.06 0 1 1 2.92-2.92l.06.06a1.7 1.7 0 0 0 1.87.34h.08a1.7 1.7 0 0 0 1.03-1.56v-.17a2.06 2.06 0 1 1 4.12 0v.09a1.7 1.7 0 0 0 1.03 1.56h.08a1.7 1.7 0 0 0 1.87-.34l.06-.06a2.06 2.06 0 1 1 2.92 2.92l-.06.06a1.7 1.7 0 0 0-.34 1.87v.08a1.7 1.7 0 0 0 1.56 1.03h.17a2.06 2.06 0 1 1 0 4.12h-.09a1.7 1.7 0 0 0-1.56 1.03Z"/></svg></span> <span data-i18n="nav.settings">Paramètres</span></a>
+    <div class="nav-label" data-i18n="nav.group_admin" id="admin-nav-label" style="display:none">Admin</div>
+    <a href="festchill-admin.html" class="s-link" id="admin-nav-link" style="display:none"><span class="ic"><svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 4.5 6.3v5.4c0 4.7 3.2 8.6 7.5 9.8 4.3-1.2 7.5-5.1 7.5-9.8V6.3Z"/><path d="M9.2 12.2l1.9 1.9 3.7-3.9"/></svg></span> <span data-i18n="nav.admin">Administration</span></a>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-pill">
+      <div class="avatar" id="side-avatar">–</div>
+      <div><div class="user-name" id="side-name">Chargement…</div><div class="user-role">Organisateur</div></div>
+    </div>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="topbar"><button class="sidebar-toggle-btn" onclick="toggleMobileSidebar()" aria-label="Menu"><svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+    <div class="topbar-title"><svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7.5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/><path d="M17 11.5h2.5a1.5 1.5 0 0 1 1.5 1.5v1a1.5 1.5 0 0 1-1.5 1.5H17a2 2 0 0 1 0-4Z"/><line x1="3" y1="8.7" x2="21" y2="8.7"/></svg> <span data-i18n="topbar.wallet">Portefeuille</span></div>
+    <button class="btn btn-primary btn-sm" onclick="openModal()" data-i18n="wallet.withdraw_money">Retirer de l'argent</button>
+  </div>
+
+  <div class="page">
+    <div class="section-card" style="margin-bottom:16px">
+      <div style="padding:22px 20px">
+        <div style="font-size:1.35rem;font-weight:800;line-height:1.3">🤝 Parraine un organisateur, paie moins de commission</div>
+        <div id="ref-intro" style="margin-top:8px;font-size:.88rem;color:var(--muted);line-height:1.55">Chargement…</div>
+      </div>
+    </div>
+
+    <div id="ref-disabled" class="section-card" style="display:none;margin-bottom:16px"><div style="padding:16px 20px;font-size:.88rem">Le parrainage est désactivé pour le moment.</div></div>
+
+    <div id="ref-main" style="display:none">
+      <div class="section-card" style="margin-bottom:16px">
+        <div class="section-head" style="padding:14px 18px"><span class="section-head-title">Ton code parrain</span></div>
+        <div style="padding:6px 20px 20px">
+          <div id="ref-code" style="font-family:var(--fm,monospace);font-size:2.2rem;font-weight:800;letter-spacing:6px;margin:6px 0 12px">······</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn btn-primary" onclick="copyCode()">📋 Copier le code</button>
+            <button class="btn btn-ghost" onclick="copyLink()">🔗 Copier le lien</button>
+            <button class="btn btn-ghost" onclick="shareWhatsApp()">💬 Envoyer sur WhatsApp</button>
+          </div>
+          <div id="ref-link" style="margin-top:12px;font-size:.76rem;color:var(--muted);word-break:break-all"></div>
+        </div>
+      </div>
+
+      <div class="section-card" style="margin-bottom:16px">
+        <div class="section-head" style="padding:14px 18px"><span class="section-head-title">Ta commission</span></div>
+        <div style="padding:6px 20px 20px">
+          <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap"><span id="ref-rate" style="font-size:2rem;font-weight:800">—</span><span id="ref-rate-sub" style="font-size:.84rem;color:var(--muted)"></span></div>
+          <div id="ref-rules" style="margin-top:10px;font-size:.82rem;line-height:1.6;color:var(--muted)"></div>
+        </div>
+      </div>
+
+      <div class="section-card" style="margin-bottom:16px">
+        <div class="section-head" style="padding:14px 18px"><span class="section-head-title">Les organisateurs que tu as parrainés</span></div>
+        <div id="ref-list" style="padding:4px 20px 16px"></div>
+      </div>
+
+      <div id="ref-have" class="section-card" style="display:none;margin-bottom:16px">
+        <div class="section-head" style="padding:14px 18px"><span class="section-head-title">J'ai un code parrain</span></div>
+        <div style="padding:6px 20px 20px">
+          <div style="font-size:.82rem;color:var(--muted);margin-bottom:8px">Un organisateur t'a invité ? Entre son code (possible pendant les 14 jours qui suivent ton inscription).</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap"><input class="form-input" id="ref-input" placeholder="Code parrain" maxlength="12" style="flex:1 1 160px;text-transform:uppercase"><button class="btn btn-primary" onclick="useCode()">Valider</button></div>
+        </div>
+      </div>
+      <div id="ref-godfather" style="display:none;margin-bottom:16px;font-size:.84rem;color:var(--muted)"></div>
+    </div>
+  </div>
+</main>
+
+<div class="toast" id="toast"><span id="toast-icon"><svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="8 12.5 10.8 15.3 16 9.5"/></svg></span><span id="toast-msg"></span></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="supabase-client.js?v=20261005"></script>
+<script>
+let profile = null, info = null;
+const fmt = (n) => Number(n || 0).toLocaleString('fr-FR');
+const pct = (n) => (Number(n)).toString().replace('.', ',') + ' %';
+const linkFor = (code) => location.origin + location.pathname.replace(/[^/]*$/, '') + 'festchill-landing.html?ref=' + encodeURIComponent(code);
+
+async function boot(){
+  profile = await fcRequireAuth();
+  if (!profile) return;
+  fcMountSidebar(profile);
+  await load();
+}
+async function load(){
+  const { data, error } = await supa.rpc('fc_my_referral');
+  if (error){ document.getElementById('ref-intro').textContent = 'Erreur : ' + error.message; return; }
+  info = data; render();
+}
+function render(){
+  const i = info;
+  document.getElementById('ref-intro').innerHTML = i.enabled
+    ? 'Partage ton code. Quand un organisateur que tu as invité vend pour au moins <b>' + fmt(i.min_sales) + ' F</b>, ta commission baisse de <b>' + String(i.reward_step).replace('.', ',') + ' point</b> (par exemple de ' + pct(i.base_rate) + ' à ' + pct(Math.max(i.min_rate, i.base_rate - i.reward_step)) + '), sur <b>tous tes futurs retraits</b>. Plus tu en invites, plus elle baisse, jusqu\'à ' + pct(i.min_rate) + '.'
+    : 'Le parrainage est désactivé pour le moment.';
+  document.getElementById('ref-disabled').style.display = i.enabled ? 'none' : 'block';
+  document.getElementById('ref-main').style.display = i.code ? 'block' : 'none';
+  document.getElementById('ref-code').textContent = i.code || '';
+  document.getElementById('ref-link').textContent = i.code ? linkFor(i.code) : '';
+  document.getElementById('ref-rate').textContent = pct(i.effective_rate);
+  const saved = Number(i.base_rate) - Number(i.effective_rate);
+  document.getElementById('ref-rate-sub').textContent = saved > 0 ? 'au lieu de ' + pct(i.base_rate) + ' — tu économises ' + String(saved).replace('.', ',') + ' point' + (saved > 1 ? 's' : '') + ' grâce au parrainage 🎉' : 'taux normal';
+  document.getElementById('ref-rules').innerHTML = '• La commission est prélevée uniquement quand tu retires ton argent.<br>• Un parrainage compte quand l\'organisateur invité a <b>réellement encaissé</b> au moins ' + fmt(i.min_sales) + ' F de ventes (ses propres achats ne comptent pas).<br>• Ta commission ne descend jamais sous ' + pct(i.min_rate) + '.';
+  const list = i.referrals || [];
+  document.getElementById('ref-list').innerHTML = list.length ? list.map(r => {
+    const p = Math.min(100, Math.round((r.sales / Math.max(1, i.min_sales)) * 100));
+    return '<div style="padding:12px 0;border-top:1px solid var(--border)"><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><b>' + fcEscapeHtml(r.name) + '</b>'
+      + (r.qualified ? '<span class="badge b-green">✅ Compte pour ta réduction</span>' : '<span class="badge b-gold">En cours</span>') + '</div>'
+      + '<div style="font-size:.76rem;color:var(--muted);margin:4px 0 6px">' + fmt(r.sales) + ' F vendus sur ' + fmt(i.min_sales) + ' F nécessaires</div>'
+      + '<div style="height:8px;border-radius:8px;background:var(--border);overflow:hidden"><div style="height:100%;width:' + p + '%;background:var(--glow)"></div></div></div>';
+  }).join('') : '<div style="padding:14px 0;color:var(--muted);font-size:.84rem">Personne pour l\'instant. Envoie ton code à un ami organisateur !</div>';
+  document.getElementById('ref-have').style.display = (!i.referred_by_name && i.enabled) ? 'block' : 'none';
+  const gf = document.getElementById('ref-godfather');
+  if (i.referred_by_name){ gf.style.display = 'block'; gf.textContent = '🤝 Tu as été invité par ' + i.referred_by_name + '.'; } else gf.style.display = 'none';
+}
+async function copyText(t, okMsg){
+  try { await navigator.clipboard.writeText(t); showToast(okMsg, FCI['check-circle']); }
+  catch(e){ await fcPrompt('Copie ce texte :', t, { title: 'Copier', ok: 'Fermer' }); }
+}
+const copyCode = () => copyText(info.code, 'Code copié !');
+const copyLink = () => copyText(linkFor(info.code), 'Lien copié !');
+function shareWhatsApp(){
+  const t = 'Salut ! Je vends mes tickets avec Fest&Chill (paiement Mobile Money, scan QR, retrait direct). Crée ton compte organisateur avec mon code ' + info.code + ' : ' + linkFor(info.code);
+  window.open('https://wa.me/?text=' + encodeURIComponent(t), '_blank');
+}
+async function useCode(){
+  const code = document.getElementById('ref-input').value.trim();
+  if (!code){ showToast('Entre un code', FCI['alert-triangle']); return; }
+  const { data, error } = await supa.rpc('fc_apply_referral', { p_code: code });
+  if (error){ showToast(error.message, FCI['x-circle']); return; }
+  if (data === 'ok'){ showToast('Code parrain enregistré !', FCI['check-circle']); await load(); }
+  else showToast(data, FCI['x-circle']);
+}
+boot();
+</script>
+</body>
+</html>
